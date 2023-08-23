@@ -1,21 +1,25 @@
 # Tenacity IT Group (TIG) VPC
 resource "aws_vpc" "TIG-VPC" {
-  cidr_block       = "10.0.0.0/16"
-  instance_tenancy = "default"
+  cidr_block       = var.vpc_cidr
+  instance_tenancy = var.vpc_tenancy
+  enable_dns_hostnames = var.vpc_hostname_toggle
+
 
   tags = {
-    Name = "TIG-VPC"
+    Name = var.vpc_name
+    Environment = var.flexible
   }
 }
-
 
 # First public subnet
 resource "aws_subnet" "Prod-pub-sub1" {
   vpc_id     = aws_vpc.TIG-VPC.id
-  cidr_block = "10.0.1.0/24"
+  cidr_block = var.public_subnet_1_cidr
+ 
 
   tags = {
-    Name = "Prod-pub-sub1"
+    Name = var.public_subnet_1_name
+    Environment = var.flexible
   }
 }
 
@@ -23,10 +27,11 @@ resource "aws_subnet" "Prod-pub-sub1" {
 # Second public subnet
 resource "aws_subnet" "Prod-pub-sub2" {
   vpc_id     = aws_vpc.TIG-VPC.id
-  cidr_block = "10.0.2.0/24"
+  cidr_block = var.public_subnet_2_cidr
 
   tags = {
-    Name = "Prod-pub-sub2"
+    Name = var.public_subnet_2_name
+    Environment = var.flexible
   }
 }
 
@@ -34,10 +39,10 @@ resource "aws_subnet" "Prod-pub-sub2" {
 # First private subnet
 resource "aws_subnet" "Prod-priv-sub1" {
   vpc_id     = aws_vpc.TIG-VPC.id
-  cidr_block = "10.0.3.0/24"
-
+  cidr_block = var.private_subnet_1_cidr
   tags = {
-    Name = "Tmt-priv-sub1"
+    Name = var.private_subnet_1_name
+    Environment = var.flexible
   }
 }
 
@@ -45,10 +50,11 @@ resource "aws_subnet" "Prod-priv-sub1" {
 # Second private subnet
 resource "aws_subnet" "Prod-priv-sub2" {
   vpc_id     = aws_vpc.TIG-VPC.id
-  cidr_block = "10.0.4.0/24"
+  cidr_block = var.private_subnet_2_cidr
 
   tags = {
-    Name = "Prod-priv-sub2"
+    Name = var.private_subnet_2_name
+    Environment = var.flexible
   }
 }
 
@@ -58,7 +64,8 @@ resource "aws_route_table" "Prod-pub-route-table" {
   vpc_id = aws_vpc.TIG-VPC.id
 
   tags = {
-    Name = "Prod-pub-route-table"
+    Name = var.public_route_table
+    Environment = var.flexible
   }
 }
 
@@ -68,7 +75,8 @@ resource "aws_route_table" "Prod-priv-route-table" {
   vpc_id = aws_vpc.TIG-VPC.id
 
   tags = {
-    Name = "Prod-priv-route-table"
+    Name = var.private_route_table
+    Environment = var.flexible
   }
 }
 
@@ -106,7 +114,8 @@ resource "aws_internet_gateway" "Prod-igw" {
   vpc_id = aws_vpc.TIG-VPC.id
 
   tags = {
-    Name = "Prod-igw"
+    Name = var.IGW
+    Environment = var.flexible
   }
 }
 
@@ -114,7 +123,7 @@ resource "aws_internet_gateway" "Prod-igw" {
 # Associating Internet gateway with the public route table
 resource "aws_route" "Prod-igw-association" {
   route_table_id            = aws_route_table.Prod-pub-route-table.id
-  destination_cidr_block    = "0.0.0.0/0"
+  destination_cidr_block    = var.IGW_cidr
   gateway_id = aws_internet_gateway.Prod-igw.id
 
   }
@@ -132,7 +141,8 @@ resource "aws_eip" "TIG-EIP" {
   subnet_id     = aws_subnet.Prod-pub-sub1.id
 
   tags = {
-    Name = "Prod-Nat-gateway"
+    Name = var.NGW
+    Environment = var.flexible
   }
   }
 
@@ -140,6 +150,6 @@ resource "aws_eip" "TIG-EIP" {
   # Associating NAT gateway with the private route table
   resource "aws_route" "Prod-Nat-association" {
   route_table_id            = aws_route_table.Prod-priv-route-table.id
-  destination_cidr_block    = "0.0.0.0/0"
+  destination_cidr_block    = var.NGW_cidr
   gateway_id = aws_nat_gateway.Prod-Nat-gateway.id
   }
