@@ -1,7 +1,7 @@
 variable "region" {
   description = "Deployment region for AWS infrastructure "
   type        = string
-  default     = "eu-west-2"
+  default     = "eu-west-1"
 }
 
 variable "vpc_name" {
@@ -31,25 +31,25 @@ variable "vpc_hostname_toggle" {
 variable "az-1" {
   description = "Availability zone for first public subnet"
   type        = string
-  default     = "eu-west-2a"
+  default     = "eu-west-1a"
 }
 
 variable "az-2" {
   description = "Availability zone for second public subnet"
   type        = string
-  default     = "eu-west-2b"
+  default     = "eu-west-1b"
 }
 
 variable "az-3" {
   description = "Availability zone for first private subnet"
   type        = string
-  default     = "eu-west-2c"
+  default     = "eu-west-1c"
 }
 
 variable "az-4" {
   description = "Availability zone for second private subnet"
   type        = string
-  default     = "eu-west-2a"
+  default     = "eu-west-1a"
 }
 
 variable "public_subnet_1_name" {
